@@ -1,0 +1,644 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>DIVA Admin</title>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<style>
+:root{--m:#C2185B;--t:#4DB6AC;--dk:#0f0f0f;--dk2:#161616;--dk3:#1e1e1e;--dk4:#252525;}
+*{box-sizing:border-box;margin:0;padding:0;}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:var(--dk);color:#e0e0e0;min-height:100vh;}
+
+/* AUTH */
+.auth-wrap{min-height:100vh;display:flex;align-items:center;justify-content:center;padding:20px;background:var(--dk);}
+.auth-box{background:var(--dk2);border:1px solid rgba(255,255,255,0.08);border-radius:14px;padding:32px 28px;width:100%;max-width:360px;}
+.auth-logo{font-family:Georgia,serif;font-size:30px;font-weight:700;color:var(--m);letter-spacing:4px;}
+.auth-sub{font-size:11px;color:var(--t);letter-spacing:3px;margin-bottom:28px;margin-top:2px;}
+.auth-label{font-size:11px;color:rgba(255,255,255,0.45);letter-spacing:1px;margin-bottom:6px;display:block;}
+.auth-input{width:100%;background:var(--dk3);border:1px solid rgba(255,255,255,0.1);border-radius:8px;padding:12px 14px;color:#fff;font-size:14px;outline:none;margin-bottom:12px;font-family:inherit;}
+.auth-input:focus{border-color:var(--m);}
+.auth-btn{width:100%;background:var(--m);color:#fff;border:none;border-radius:8px;padding:14px;font-size:14px;font-weight:700;cursor:pointer;letter-spacing:.5px;}
+.auth-err{font-size:12px;color:#ff6b6b;margin-top:8px;text-align:center;}
+
+/* LAYOUT */
+.app{display:none;flex-direction:column;min-height:100vh;}
+.app.visible{display:flex;}
+header{background:var(--dk2);border-bottom:1px solid rgba(255,255,255,0.07);padding:0 20px;height:54px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:100;}
+.h-logo{font-family:Georgia,serif;font-size:20px;color:var(--m);letter-spacing:3px;font-weight:700;}
+.h-right{display:flex;align-items:center;gap:10px;}
+.h-badge{font-size:10px;color:var(--t);background:rgba(77,182,172,0.1);border:1px solid rgba(77,182,172,0.2);padding:4px 12px;border-radius:20px;letter-spacing:1px;}
+.h-logout{background:none;border:1px solid rgba(255,255,255,0.1);color:rgba(255,255,255,0.45);font-size:11px;padding:5px 12px;border-radius:6px;cursor:pointer;font-family:inherit;}
+
+/* TABS */
+.tabs{display:flex;border-bottom:1px solid rgba(255,255,255,0.07);background:var(--dk2);overflow-x:auto;scrollbar-width:none;}
+.tabs::-webkit-scrollbar{display:none;}
+.tab{flex-shrink:0;background:none;border:none;color:rgba(255,255,255,0.4);font-size:12px;padding:13px 18px;cursor:pointer;border-bottom:2px solid transparent;font-family:inherit;transition:.2s;white-space:nowrap;}
+.tab.active{color:#fff;border-bottom-color:var(--m);}
+
+.content{flex:1;padding:20px;}
+
+/* STATS */
+.stats-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:22px;}
+.stat-card{background:var(--dk2);border:1px solid rgba(255,255,255,0.07);border-radius:10px;padding:16px;}
+.stat-val{font-size:30px;font-weight:700;color:#fff;line-height:1;}
+.stat-label{font-size:10px;color:rgba(255,255,255,0.35);letter-spacing:1.5px;text-transform:uppercase;margin-top:5px;}
+.stat-trend{font-size:11px;color:var(--t);margin-top:5px;}
+.chart-card{background:var(--dk2);border:1px solid rgba(255,255,255,0.07);border-radius:10px;padding:16px;margin-bottom:12px;}
+.chart-title{font-size:10px;color:rgba(255,255,255,0.4);letter-spacing:1.5px;text-transform:uppercase;margin-bottom:14px;}
+.bar-row{display:flex;align-items:center;gap:10px;margin-bottom:9px;}
+.bar-label{font-size:11px;color:rgba(255,255,255,0.65);width:130px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;flex-shrink:0;}
+.bar-wrap{flex:1;background:rgba(255,255,255,0.05);border-radius:4px;height:8px;overflow:hidden;}
+.bar-fill{height:100%;border-radius:4px;transition:width .6s ease;}
+.bar-fill.m{background:var(--m);}
+.bar-fill.t{background:var(--t);}
+.bar-fill.g{background:#D4AF37;}
+.bar-num{font-size:10px;color:rgba(255,255,255,0.35);width:24px;text-align:right;flex-shrink:0;}
+.no-data{font-size:12px;color:rgba(255,255,255,0.2);text-align:center;padding:16px;letter-spacing:.5px;}
+
+/* PRODUCTS */
+.toolbar{display:flex;gap:8px;margin-bottom:14px;flex-wrap:wrap;}
+.search-box{flex:1;min-width:160px;background:var(--dk3);border:1px solid rgba(255,255,255,0.1);border-radius:8px;padding:9px 14px;color:#fff;font-size:13px;outline:none;font-family:inherit;}
+.search-box:focus{border-color:var(--t);}
+.sel-box{background:var(--dk3);border:1px solid rgba(255,255,255,0.1);border-radius:8px;padding:9px 12px;color:#fff;font-size:12px;outline:none;cursor:pointer;font-family:inherit;}
+.btn-add{background:var(--m);color:#fff;border:none;border-radius:8px;padding:9px 16px;font-size:12px;font-weight:700;cursor:pointer;letter-spacing:.5px;white-space:nowrap;box-shadow:0 2px 10px rgba(194,24,91,0.3);}
+.prod-list{display:flex;flex-direction:column;gap:8px;}
+.prod-row{background:var(--dk2);border:1px solid rgba(255,255,255,0.06);border-radius:10px;padding:12px 14px;display:flex;align-items:center;gap:12px;transition:border-color .2s;}
+.prod-row:hover{border-color:rgba(255,255,255,0.12);}
+.prod-thumb{width:46px;height:46px;border-radius:8px;background:var(--dk3);flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:22px;overflow:hidden;}
+.prod-thumb img{width:46px;height:46px;object-fit:cover;border-radius:8px;}
+.prod-info{flex:1;min-width:0;}
+.prod-name{font-size:13px;color:#fff;font-weight:500;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.prod-meta{font-size:10px;color:rgba(255,255,255,0.3);margin-top:2px;}
+.prod-acts{display:flex;gap:5px;flex-shrink:0;}
+.btn-sm{background:none;border:1px solid rgba(255,255,255,0.1);color:rgba(255,255,255,0.55);font-size:10px;padding:5px 9px;border-radius:6px;cursor:pointer;transition:.15s;font-family:inherit;}
+.btn-sm:hover{border-color:var(--t);color:var(--t);}
+.btn-sm.del:hover{border-color:#ff6b6b;color:#ff6b6b;}
+.badge-v{font-size:9px;padding:2px 6px;border-radius:8px;letter-spacing:.5px;}
+.badge-v.on{background:rgba(77,182,172,0.12);color:var(--t);border:1px solid rgba(77,182,172,0.25);}
+.badge-v.off{background:rgba(255,100,100,0.08);color:#ff8a80;border:1px solid rgba(255,100,100,0.2);}
+.pagination{display:flex;align-items:center;justify-content:center;gap:10px;margin-top:16px;}
+.pag-btn{background:var(--dk3);border:1px solid rgba(255,255,255,0.1);color:rgba(255,255,255,0.5);font-size:12px;padding:7px 16px;border-radius:6px;cursor:pointer;font-family:inherit;}
+.pag-btn:disabled{opacity:.3;cursor:not-allowed;}
+.pag-info{font-size:11px;color:rgba(255,255,255,0.3);}
+
+/* CATEGORIES */
+.cat-row{background:var(--dk2);border:1px solid rgba(255,255,255,0.06);border-radius:10px;padding:12px 14px;display:flex;align-items:center;gap:12px;margin-bottom:8px;}
+.cat-thumb{width:46px;height:46px;border-radius:8px;background:var(--dk3);flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:22px;overflow:hidden;}
+.cat-thumb img{width:46px;height:46px;object-fit:cover;border-radius:8px;}
+.cat-inf{flex:1;}
+.cat-n{font-size:14px;color:#fff;font-weight:500;}
+.cat-m{font-size:10px;color:rgba(255,255,255,0.3);margin-top:2px;}
+.cat-acts{display:flex;gap:5px;flex-shrink:0;}
+.tog-btn{background:none;border:1px solid rgba(255,255,255,0.1);color:rgba(255,255,255,0.5);font-size:11px;padding:6px 12px;border-radius:6px;cursor:pointer;font-family:inherit;transition:.15s;}
+.tog-btn.on{border-color:var(--t);color:var(--t);}
+
+/* SETTINGS */
+.settings-section{background:var(--dk2);border:1px solid rgba(255,255,255,0.07);border-radius:10px;padding:18px;margin-bottom:14px;}
+.settings-title{font-size:11px;color:rgba(255,255,255,0.4);letter-spacing:2px;text-transform:uppercase;margin-bottom:14px;font-weight:600;}
+.form-row{margin-bottom:14px;}
+.form-label{font-size:11px;color:rgba(255,255,255,0.45);letter-spacing:.5px;margin-bottom:6px;display:block;}
+.form-input{width:100%;background:var(--dk3);border:1px solid rgba(255,255,255,0.1);border-radius:8px;padding:10px 13px;color:#fff;font-size:13px;outline:none;font-family:inherit;}
+.form-input:focus{border-color:var(--t);}
+.form-textarea{width:100%;background:var(--dk3);border:1px solid rgba(255,255,255,0.1);border-radius:8px;padding:10px 13px;color:#fff;font-size:13px;outline:none;font-family:inherit;resize:vertical;min-height:72px;}
+.btn-save{background:var(--t);color:var(--dk);border:none;border-radius:8px;padding:11px 22px;font-size:13px;font-weight:700;cursor:pointer;font-family:inherit;margin-top:6px;}
+.btn-save:active{opacity:.85;}
+
+/* MODAL */
+.modal-bg{position:fixed;inset:0;background:rgba(0,0,0,0.75);z-index:500;display:none;align-items:flex-end;justify-content:center;backdrop-filter:blur(4px);}
+.modal-bg.open{display:flex;}
+.modal{background:var(--dk2);border-radius:16px 16px 0 0;width:100%;max-width:520px;max-height:92vh;overflow-y:auto;padding:24px 20px 30px;}
+.modal-handle{width:36px;height:3px;background:rgba(255,255,255,0.15);border-radius:2px;margin:0 auto 22px;}
+.modal-title{font-size:17px;color:#fff;font-weight:600;margin-bottom:20px;}
+.fg{margin-bottom:14px;}
+.fl{font-size:11px;color:rgba(255,255,255,0.45);letter-spacing:.5px;margin-bottom:5px;display:block;}
+.fi{width:100%;background:var(--dk3);border:1px solid rgba(255,255,255,0.1);border-radius:8px;padding:11px 13px;color:#fff;font-size:13px;outline:none;font-family:inherit;}
+.fi:focus{border-color:var(--t);}
+.fs{width:100%;background:var(--dk3);border:1px solid rgba(255,255,255,0.1);border-radius:8px;padding:11px 13px;color:#fff;font-size:13px;outline:none;cursor:pointer;font-family:inherit;}
+.fta{width:100%;background:var(--dk3);border:1px solid rgba(255,255,255,0.1);border-radius:8px;padding:11px 13px;color:#fff;font-size:13px;outline:none;font-family:inherit;resize:vertical;min-height:80px;}
+.tag-grid{display:flex;flex-wrap:wrap;gap:6px;}
+.tag-opt{background:none;border:1px solid rgba(255,255,255,0.12);color:rgba(255,255,255,0.55);font-size:11px;padding:5px 11px;border-radius:20px;cursor:pointer;font-family:inherit;transition:.15s;}
+.tag-opt.sel{background:var(--m);border-color:var(--m);color:#fff;}
+.modal-check{display:flex;align-items:center;gap:10px;cursor:pointer;font-size:13px;color:rgba(255,255,255,0.7);}
+.modal-btns{display:flex;gap:10px;margin-top:22px;}
+.btn-primary{flex:1;background:var(--m);color:#fff;border:none;border-radius:8px;padding:13px;font-size:13px;font-weight:700;cursor:pointer;font-family:inherit;box-shadow:0 2px 12px rgba(194,24,91,0.3);}
+.btn-cancel{background:none;border:1px solid rgba(255,255,255,0.12);color:rgba(255,255,255,0.55);border-radius:8px;padding:13px 18px;font-size:13px;cursor:pointer;font-family:inherit;}
+
+.loading-sm{font-size:12px;color:rgba(255,255,255,0.2);text-align:center;padding:32px;letter-spacing:.5px;}
+.toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%);background:var(--dk3);color:#fff;padding:10px 22px;border-radius:22px;opacity:0;transition:.3s;font-size:13px;z-index:999;border:1px solid rgba(255,255,255,0.1);pointer-events:none;white-space:nowrap;}
+.toast.show{opacity:1;}
+input[type=hidden]{display:none;}
+</style>
+</head>
+<body>
+
+<!-- AUTH -->
+<div class="auth-wrap" id="authWrap">
+  <div class="auth-box">
+    <div class="auth-logo">DIVA</div>
+    <div class="auth-sub">panel de administración</div>
+    <label class="auth-label">Email</label>
+    <input class="auth-input" id="authEmail" type="email" placeholder="admin@diva.com.py">
+    <label class="auth-label">Contraseña</label>
+    <input class="auth-input" id="authPass" type="password" placeholder="••••••••" onkeydown="if(event.key==='Enter')login()">
+    <button class="auth-btn" onclick="login()">Ingresar →</button>
+    <p class="auth-err" id="authErr"></p>
+  </div>
+</div>
+
+<!-- APP -->
+<div class="app" id="app">
+  <header>
+    <div class="h-logo">DIVA</div>
+    <div class="h-right">
+      <span class="h-badge" id="userBadge">Admin</span>
+      <button class="h-logout" onclick="logout()">Salir</button>
+    </div>
+  </header>
+
+  <div class="tabs">
+    <button class="tab active" onclick="switchTab('stats',this)">📊 Estadísticas</button>
+    <button class="tab" onclick="switchTab('products',this)">📦 Productos</button>
+    <button class="tab" onclick="switchTab('categories',this)">🗂 Categorías</button>
+    <button class="tab" onclick="switchTab('social',this)">📸 Hogares</button>
+    <button class="tab" onclick="switchTab('settings',this)">⚙️ Config</button>
+  </div>
+
+  <div class="content">
+
+    <!-- STATS -->
+    <div id="tab-stats">
+      <div class="stats-grid">
+        <div class="stat-card"><div class="stat-val" id="sTotProds">—</div><div class="stat-label">Productos activos</div></div>
+        <div class="stat-card"><div class="stat-val" id="sViewsHoy">—</div><div class="stat-label">Vistas hoy</div><div class="stat-trend" id="sTrend"></div></div>
+        <div class="stat-card"><div class="stat-val" id="sTotWa">—</div><div class="stat-label">Consultas WhatsApp</div></div>
+        <div class="stat-card"><div class="stat-val" id="sTotBusq">—</div><div class="stat-label">Búsquedas</div></div>
+      </div>
+      <div class="chart-card">
+        <div class="chart-title">Productos más consultados (WhatsApp)</div>
+        <div id="topProds"><div class="loading-sm">Cargando...</div></div>
+      </div>
+      <div class="chart-card">
+        <div class="chart-title">Categorías más visitadas</div>
+        <div id="topCats"><div class="loading-sm">Cargando...</div></div>
+      </div>
+      <div class="chart-card">
+        <div class="chart-title">Términos más buscados</div>
+        <div id="topSearch"><div class="loading-sm">Cargando...</div></div>
+      </div>
+    </div>
+
+    <!-- PRODUCTS -->
+    <div id="tab-products" style="display:none">
+      <div class="toolbar">
+        <input class="search-box" id="prodSearch" type="text" placeholder="Buscar..." oninput="searchProds()">
+        <select class="sel-box" id="prodCatF" onchange="loadProds()">
+          <option value="">Todas las categorías</option>
+        </select>
+        <select class="sel-box" id="prodStatF" onchange="loadProds()">
+          <option value="">Todos</option>
+          <option value="true">Activos</option>
+          <option value="false">Ocultos</option>
+        </select>
+        <button class="btn-add" onclick="openModal()">+ Agregar</button>
+      </div>
+      <div class="prod-list" id="prodList"><div class="loading-sm">Cargando...</div></div>
+      <div class="pagination">
+        <button class="pag-btn" id="pagP" onclick="changePage(-1)" disabled>←</button>
+        <span class="pag-info" id="pagI"></span>
+        <button class="pag-btn" id="pagN" onclick="changePage(1)">→</button>
+      </div>
+    </div>
+
+    <!-- CATEGORIES -->
+    <div id="tab-categories" style="display:none">
+      <p style="font-size:12px;color:rgba(255,255,255,0.35);margin-bottom:16px;line-height:1.6;">Activá o desactivá categorías. Las desactivadas no aparecen en la web. Podés editar la foto de portada de cada una.</p>
+      <div id="catList"><div class="loading-sm">Cargando...</div></div>
+    </div>
+
+    <!-- SOCIAL PROOF TAB -->
+    <div id="tab-social" style="display:none">
+      <p style="font-size:12px;color:rgba(255,255,255,0.35);margin-bottom:16px;line-height:1.6;">Fotos de clientes para la sección "En hogares reales". Subí las fotos a Cloudinary y pegá el Public ID acá.</p>
+      <button class="btn-add" onclick="addSocialProof()" style="margin-bottom:16px;width:100%">+ Agregar foto</button>
+      <div id="spList"><div class="loading-sm">Cargando...</div></div>
+    </div>
+
+    <!-- SETTINGS TAB -->
+    <div id="tab-settings" style="display:none">
+      <div class="settings-section">
+        <div class="settings-title">🕐 Horarios de atención</div>
+        <div class="form-row">
+          <label class="form-label">Lunes a Sábado</label>
+          <input class="form-input" id="sHorLS" placeholder="07:00 – 19:00 hs">
+        </div>
+        <div class="form-row">
+          <label class="form-label">Domingos</label>
+          <input class="form-input" id="sHorD" placeholder="08:30 – 12:30 hs">
+        </div>
+        <button class="btn-save" onclick="saveSettings(['horario_ls','horario_d'])">Guardar horarios ✓</button>
+      </div>
+
+      <div class="settings-section">
+        <div class="settings-title">📞 Contacto</div>
+        <div class="form-row">
+          <label class="form-label">Teléfono (display)</label>
+          <input class="form-input" id="sTel" placeholder="(+595) 0983 249 999">
+        </div>
+        <div class="form-row">
+          <label class="form-label">WhatsApp (solo números, con código país)</label>
+          <input class="form-input" id="sWa" placeholder="595983249999">
+        </div>
+        <div class="form-row">
+          <label class="form-label">Dirección</label>
+          <input class="form-input" id="sDirec" placeholder="Dirección completa">
+        </div>
+        <button class="btn-save" onclick="saveSettings(['telefono','whatsapp','direccion'])">Guardar contacto ✓</button>
+      </div>
+
+      <div class="settings-section">
+        <div class="settings-title">🖼 Foto del Hero (portada web)</div>
+        <div class="form-row">
+          <label class="form-label">Public ID de Cloudinary o URL completa</label>
+          <input class="form-input" id="sHeroUrl" placeholder="IMG_3836_zkzs4g o https://...">
+        </div>
+        <p style="font-size:11px;color:rgba(255,255,255,0.3);margin-bottom:10px;line-height:1.6;">Para ajustar el encuadre usá el <a href="crop.html" style="color:var(--t)">Editor de Fotos →</a></p>
+        <button class="btn-save" onclick="saveSettings(['hero_url'])">Guardar hero ✓</button>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- MODAL PRODUCTO -->
+<div class="modal-bg" id="modalBg" onclick="if(event.target===this)closeModal()">
+  <div class="modal">
+    <div class="modal-handle"></div>
+    <div class="modal-title" id="modalTitle">Agregar producto</div>
+    <input type="hidden" id="fId">
+    <div class="fg"><label class="fl">Código *</label><input class="fi" id="fCodigo" placeholder="Ej: 900112"></div>
+    <div class="fg"><label class="fl">Nombre (opcional)</label><input class="fi" id="fNombre" placeholder="Ej: Silla Medusa Gold"></div>
+    <div class="fg"><label class="fl">Categoría *</label><select class="fs" id="fCat"></select></div>
+    <div class="fg"><label class="fl">Descripción</label><textarea class="fta" id="fDesc" placeholder="Descripción del producto..."></textarea></div>
+    <div class="fg">
+      <label class="fl">Fotos — hasta 5 (Public ID de Cloudinary)</label>
+      <p style="font-size:10px;color:rgba(255,255,255,0.25);margin-bottom:8px;line-height:1.5;">La primera foto es la principal. Podés subir y recortar en el <a href="crop.html" style="color:var(--t)" target="_blank">Editor de Fotos →</a></p>
+      <div id="fFotosWrap" style="display:flex;flex-direction:column;gap:8px;">
+        <div style="display:flex;gap:8px;align-items:center;">
+          <span style="font-size:10px;color:rgba(255,255,255,0.3);width:20px;flex-shrink:0;">1</span>
+          <input class="fi" id="fFoto1" placeholder="Public ID foto principal" style="flex:1">
+          <div id="fThumb1" style="width:40px;height:40px;border-radius:6px;background:var(--dk3);flex-shrink:0;overflow:hidden;display:flex;align-items:center;justify-content:center;font-size:16px;"></div>
+        </div>
+        <div style="display:flex;gap:8px;align-items:center;">
+          <span style="font-size:10px;color:rgba(255,255,255,0.3);width:20px;flex-shrink:0;">2</span>
+          <input class="fi" id="fFoto2" placeholder="Foto 2 (opcional)" style="flex:1">
+          <div id="fThumb2" style="width:40px;height:40px;border-radius:6px;background:var(--dk3);flex-shrink:0;overflow:hidden;display:flex;align-items:center;justify-content:center;font-size:16px;"></div>
+        </div>
+        <div style="display:flex;gap:8px;align-items:center;">
+          <span style="font-size:10px;color:rgba(255,255,255,0.3);width:20px;flex-shrink:0;">3</span>
+          <input class="fi" id="fFoto3" placeholder="Foto 3 (opcional)" style="flex:1">
+          <div id="fThumb3" style="width:40px;height:40px;border-radius:6px;background:var(--dk3);flex-shrink:0;overflow:hidden;display:flex;align-items:center;justify-content:center;font-size:16px;"></div>
+        </div>
+        <div style="display:flex;gap:8px;align-items:center;">
+          <span style="font-size:10px;color:rgba(255,255,255,0.3);width:20px;flex-shrink:0;">4</span>
+          <input class="fi" id="fFoto4" placeholder="Foto 4 (opcional)" style="flex:1">
+          <div id="fThumb4" style="width:40px;height:40px;border-radius:6px;background:var(--dk3);flex-shrink:0;overflow:hidden;display:flex;align-items:center;justify-content:center;font-size:16px;"></div>
+        </div>
+        <div style="display:flex;gap:8px;align-items:center;">
+          <span style="font-size:10px;color:rgba(255,255,255,0.3);width:20px;flex-shrink:0;">5</span>
+          <input class="fi" id="fFoto5" placeholder="Foto 5 (opcional)" style="flex:1">
+          <div id="fThumb5" style="width:40px;height:40px;border-radius:6px;background:var(--dk3);flex-shrink:0;overflow:hidden;display:flex;align-items:center;justify-content:center;font-size:16px;"></div>
+        </div>
+      </div>
+    </div>
+    <div class="fg"><label class="fl">Ambiente</label><div class="tag-grid" id="fAmb"><button class="tag-opt" data-v="Sala">Sala</button><button class="tag-opt" data-v="Dormitorio">Dormitorio</button><button class="tag-opt" data-v="Comedor">Comedor</button><button class="tag-opt" data-v="Baño">Baño</button><button class="tag-opt" data-v="Infantil">Infantil</button><button class="tag-opt" data-v="Exterior">Exterior</button></div></div>
+    <div class="fg"><label class="fl">Estilo</label><div class="tag-grid" id="fEst"><button class="tag-opt" data-v="Floral">Floral</button><button class="tag-opt" data-v="Geométrico">Geométrico</button><button class="tag-opt" data-v="Clásico">Clásico</button><button class="tag-opt" data-v="Moderno">Moderno</button><button class="tag-opt" data-v="Rústico">Rústico</button><button class="tag-opt" data-v="Natural">Natural</button><button class="tag-opt" data-v="Abstracto">Abstracto</button><button class="tag-opt" data-v="Infantil">Infantil</button></div></div>
+    <div class="fg"><label class="fl">Color</label><div class="tag-grid" id="fCol"><button class="tag-opt" data-v="Neutros">Neutros</button><button class="tag-opt" data-v="Blancos">Blancos</button><button class="tag-opt" data-v="Oscuros">Oscuros</button><button class="tag-opt" data-v="Coloridos">Coloridos</button><button class="tag-opt" data-v="Dorado">Dorado</button><button class="tag-opt" data-v="Plateado">Plateado</button></div></div>
+    <div class="fg" style="display:flex;gap:20px;">
+      <label class="modal-check"><input type="checkbox" id="fDest"> Destacado en home</label>
+      <label class="modal-check"><input type="checkbox" id="fActivo" checked> Visible</label>
+    </div>
+    <div class="modal-btns">
+      <button class="btn-cancel" onclick="closeModal()">Cancelar</button>
+      <button class="btn-primary" onclick="saveProd()">Guardar</button>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+const SB_URL='https://paekbfowwyjztfabcphs.supabase.co';
+const SB_KEY='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InBhZWtiZm93d3lqenRmYWJjcGhzIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODA4ODE2MzYsImV4cCI6MjA5NjQ1NzYzNn0.2wFJ5xa2Uq3WqBBLV3UhDjFdmxfdrzoWOHG0ZaDWXKw';
+const CLD='dnixftrzb';
+const sb=supabase.createClient(SB_URL,SB_KEY);
+let PAGE=0,PAGE_SIZE=20,allCats=[],settings={};
+
+// AUTH
+async function login(){
+  const e=document.getElementById('authEmail').value,p=document.getElementById('authPass').value;
+  document.getElementById('authErr').textContent='';
+  const{data,error}=await sb.auth.signInWithPassword({email:e,password:p});
+  if(error){document.getElementById('authErr').textContent='Email o contraseña incorrectos';return;}
+  initApp(data.user);
+}
+async function logout(){await sb.auth.signOut();location.reload();}
+async function checkSession(){const{data}=await sb.auth.getSession();if(data.session)initApp(data.session.user);}
+
+function initApp(user){
+  document.getElementById('authWrap').style.display='none';
+  document.getElementById('app').classList.add('visible');
+  document.getElementById('userBadge').textContent=user.email?.split('@')[0]||'Admin';
+  loadCats().then(()=>{loadStats();loadProds();loadCatManager();loadSettingsForm();loadSocialProofAdmin();});
+}
+
+// TABS
+function switchTab(name,el){
+  document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
+  el.classList.add('active');
+  document.querySelectorAll('[id^="tab-"]').forEach(t=>t.style.display='none');
+  document.getElementById('tab-'+name).style.display='block';
+  if(name==='social')loadSocialProofAdmin();
+}
+
+// STATS
+async function loadStats(){
+  const today=new Date();today.setHours(0,0,0,0);
+  const[prods,views,wa,busq]=await Promise.all([
+    sb.from('productos').select('*',{count:'exact',head:true}).eq('activo',true),
+    sb.from('eventos').select('*',{count:'exact',head:true}).eq('tipo','vista_producto').gte('created_at',today.toISOString()),
+    sb.from('eventos').select('*',{count:'exact',head:true}).eq('tipo','consulta_whatsapp'),
+    sb.from('eventos').select('*',{count:'exact',head:true}).eq('tipo','busqueda'),
+  ]);
+  document.getElementById('sTotProds').textContent=prods.count??'0';
+  document.getElementById('sViewsHoy').textContent=views.count??'0';
+  document.getElementById('sTotWa').textContent=wa.count??'0';
+  document.getElementById('sTotBusq').textContent=busq.count??'0';
+
+  // Top products
+  const{data:twA}=await sb.from('eventos').select('producto_id,productos(nombre,codigo)').eq('tipo','consulta_whatsapp').not('producto_id','is',null).limit(200);
+  renderChart('topProds',countBy(twA,e=>e.productos?.nombre||e.productos?.codigo||'?'),'m');
+
+  // Top categories
+  const{data:tcA}=await sb.from('eventos').select('categoria_id,categorias(nombre)').eq('tipo','vista_categoria').not('categoria_id','is',null).limit(200);
+  renderChart('topCats',countBy(tcA,e=>e.categorias?.nombre||'?'),'t');
+
+  // Top searches
+  const{data:tsA}=await sb.from('eventos').select('termino_busqueda').eq('tipo','busqueda').not('termino_busqueda','is',null).limit(300);
+  renderChart('topSearch',countBy(tsA,e=>e.termino_busqueda?.toLowerCase().trim()),'g');
+}
+
+function countBy(arr,fn){
+  const c={};(arr||[]).forEach(e=>{const k=fn(e);if(k)c[k]=(c[k]||0)+1;});
+  return Object.entries(c).sort((a,b)=>b[1]-a[1]).slice(0,6);
+}
+function renderChart(id,data,cls){
+  const el=document.getElementById(id);
+  if(!data.length){el.innerHTML='<div class="no-data">Sin datos aún — los datos aparecen cuando hay visitas</div>';return;}
+  const max=data[0][1]||1;
+  el.innerHTML=data.map(([l,n])=>`<div class="bar-row"><span class="bar-label">${l}</span><div class="bar-wrap"><div class="bar-fill ${cls}" style="width:${Math.round(n/max*100)}%"></div></div><span class="bar-num">${n}</span></div>`).join('');
+}
+
+// CATS
+async function loadCats(){
+  const{data}=await sb.from('categorias').select('*').order('orden');
+  allCats=data||[];
+  const opts=allCats.map(c=>`<option value="${c.id}">${c.nombre}</option>`).join('');
+  document.getElementById('prodCatF').innerHTML='<option value="">Todas las categorías</option>'+opts;
+  document.getElementById('fCat').innerHTML=opts;
+}
+
+async function loadCatManager(){
+  const rows=await Promise.all(allCats.map(async c=>{
+    const{count}=await sb.from('productos').select('*',{count:'exact',head:true}).eq('categoria_id',c.id);
+    return{...c,cnt:count||0};
+  }));
+  document.getElementById('catList').innerHTML=rows.map(c=>{
+    const src=c.foto_url?(c.foto_url.startsWith('http')?c.foto_url:`https://res.cloudinary.com/${CLD}/image/upload/c_fill,w_92,h_92,q_auto/${c.foto_url}`):null;
+    return`<div class="cat-row">
+      <div class="cat-thumb">${src?`<img src="${src}" alt="${c.nombre}">`:'🖼️'}</div>
+      <div class="cat-inf"><div class="cat-n">${c.nombre}</div><div class="cat-m">${c.cnt} productos · ${c.activa?'Visible':'Oculta'}</div></div>
+      <div class="cat-acts">
+        <button class="btn-sm" onclick="editCatPhoto('${c.id}','${c.nombre}','${c.foto_url||''}')">🖼 Foto</button>
+        <button class="tog-btn ${c.activa?'on':''}" onclick="toggleCat('${c.id}',${c.activa},this)">${c.activa?'👁 Vis':'🙈 Ocul'}</button>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+function editCatPhoto(id,nombre,cur){
+  const v=prompt(`Foto de "${nombre}"\nActual: ${cur||'(ninguna)'}\n\nPublic ID de Cloudinary:`,cur);
+  if(v===null)return;
+  sb.from('categorias').update({foto_url:v.trim()||null}).eq('id',id).then(({error})=>{
+    if(error){toast('Error: '+error.message);return;}
+    toast('Foto actualizada ✓');loadCatManager();
+  });
+}
+
+async function toggleCat(id,cur,btn){
+  const{error}=await sb.from('categorias').update({activa:!cur}).eq('id',id);
+  if(error){toast('Error');return;}
+  btn.textContent=!cur?'👁 Vis':'🙈 Ocul';
+  btn.className='tog-btn'+(!cur?' on':'');
+  btn.closest('.cat-row').querySelector('.cat-m').textContent=btn.closest('.cat-row').querySelector('.cat-m').textContent.replace(/Visible|Oculta/,!cur?'Visible':'Oculta');
+  toast(!cur?'Categoría visible ✓':'Categoría ocultada');
+}
+
+// PRODUCTS
+let sTimer=null;
+function searchProds(){clearTimeout(sTimer);sTimer=setTimeout(()=>{PAGE=0;loadProds();},380);}
+
+async function loadProds(){
+  document.getElementById('prodList').innerHTML='<div class="loading-sm">Cargando...</div>';
+  const srch=document.getElementById('prodSearch').value.trim();
+  const catId=document.getElementById('prodCatF').value;
+  const stat=document.getElementById('prodStatF').value;
+  let q=sb.from('productos').select('*,categorias(nombre)',{count:'exact'}).order('created_at',{ascending:false}).range(PAGE*PAGE_SIZE,(PAGE+1)*PAGE_SIZE-1);
+  if(srch)q=q.or(`codigo.ilike.%${srch}%,nombre.ilike.%${srch}%`);
+  if(catId)q=q.eq('categoria_id',catId);
+  if(stat!=='')q=q.eq('activo',stat==='true');
+  const{data,count}=await q;
+  if(!data||data.length===0){document.getElementById('prodList').innerHTML='<div class="loading-sm">Sin productos</div>';document.getElementById('pagI').textContent='';document.getElementById('pagP').disabled=true;document.getElementById('pagN').disabled=true;return;}
+  document.getElementById('prodList').innerHTML=data.map(p=>{
+    const src=p.foto_url?(p.foto_url.startsWith('http')?p.foto_url:(p.foto_url.includes('/')?`https://res.cloudinary.com/${CLD}/image/upload/${p.foto_url}`:`https://res.cloudinary.com/${CLD}/image/upload/c_fill,w_92,h_92,q_auto/${p.foto_url}`)  ):null;
+    return`<div class="prod-row">
+      <div class="prod-thumb">${src?`<img src="${src}" alt="${p.codigo}">`:'📦'}</div>
+      <div class="prod-info">
+        <div class="prod-name">${p.nombre||p.codigo}</div>
+        <div class="prod-meta">${p.categorias?.nombre||''} · <span class="badge-v ${p.activo?'on':'off'}">${p.activo?'Visible':'Oculto'}</span>${p.destacado?' · ⭐':''}</div>
+      </div>
+      <div class="prod-acts">
+        <button class="btn-sm" onclick="editProd('${p.id}')">✏️</button>
+        <button class="btn-sm" onclick="togProd('${p.id}',${p.activo})">${p.activo?'🙈':'👁'}</button>
+        <button class="btn-sm del" onclick="delProd('${p.id}')">🗑</button>
+      </div>
+    </div>`;
+  }).join('');
+  const tot=count||0,fr=PAGE*PAGE_SIZE+1,to=Math.min((PAGE+1)*PAGE_SIZE,tot);
+  document.getElementById('pagI').textContent=`${fr}–${to} de ${tot}`;
+  document.getElementById('pagP').disabled=PAGE===0;
+  document.getElementById('pagN').disabled=to>=tot;
+}
+
+function changePage(d){PAGE+=d;loadProds();window.scrollTo(0,0);}
+
+async function togProd(id,cur){await sb.from('productos').update({activo:!cur}).eq('id',id);toast(!cur?'Visible ✓':'Ocultado');loadProds();}
+async function delProd(id){if(!confirm('¿Eliminar este producto?'))return;await sb.from('productos').delete().eq('id',id);toast('Eliminado');loadProds();}
+
+// MODAL
+['fAmb','fEst','fCol'].forEach(id=>{
+  document.querySelectorAll(`#${id} .tag-opt`).forEach(b=>b.onclick=()=>b.classList.toggle('sel'));
+});
+function getTagVals(id){return[...document.querySelectorAll(`#${id} .tag-opt.sel`)].map(b=>b.dataset.v);}
+function setTagVals(id,vals){document.querySelectorAll(`#${id} .tag-opt`).forEach(b=>b.classList.toggle('sel',(vals||[]).includes(b.dataset.v)));}
+
+function openModal(prod=null){
+  document.getElementById('modalTitle').textContent=prod?'Editar producto':'Agregar producto';
+  document.getElementById('fId').value=prod?.id||'';
+  document.getElementById('fCodigo').value=prod?.codigo||'';
+  document.getElementById('fNombre').value=prod?.nombre||'';
+  document.getElementById('fDesc').value=prod?.descripcion||'';
+  document.getElementById('fDest').checked=prod?.destacado||false;
+  document.getElementById('fActivo').checked=prod?.activo!==false;
+  if(prod?.categoria_id)document.getElementById('fCat').value=prod.categoria_id;
+  setTagVals('fAmb',prod?.ambiente);setTagVals('fEst',prod?.estilo);setTagVals('fCol',prod?.color);
+  // Load photos - combine fotos array + foto_url fallback
+  const fotos=prod?.fotos&&prod.fotos.length>0?prod.fotos:(prod?.foto_url?[prod.foto_url]:[]);
+  for(let i=1;i<=5;i++){
+    const val=fotos[i-1]||'';
+    document.getElementById(`fFoto${i}`).value=val;
+    updateThumb(i,val);
+  }
+  // Setup thumb preview on input
+  for(let i=1;i<=5;i++){
+    const inp=document.getElementById(`fFoto${i}`);
+    inp.oninput=function(){updateThumb(i,this.value.trim());};
+  }
+  document.getElementById('modalBg').classList.add('open');
+}
+
+function updateThumb(i,val){
+  const el=document.getElementById(`fThumb${i}`);
+  if(!val){el.innerHTML='';return;}
+  const url=val.startsWith('http')?val:(val.includes('/')?`https://res.cloudinary.com/${CLD}/image/upload/${val}`:`https://res.cloudinary.com/${CLD}/image/upload/c_fill,w_80,h_80,q_auto/${val}`);
+  el.innerHTML=`<img src="${url}" style="width:40px;height:40px;object-fit:cover;border-radius:6px;" onerror="this.parentElement.innerHTML='❌'">`;
+}
+function closeModal(){document.getElementById('modalBg').classList.remove('open');}
+
+async function editProd(id){const{data}=await sb.from('productos').select('*').eq('id',id).single();if(data)openModal(data);}
+
+async function saveProd(){
+  const id=document.getElementById('fId').value;
+  // Collect up to 5 photos
+  const fotos=[];
+  for(let i=1;i<=5;i++){
+    const v=document.getElementById(`fFoto${i}`).value.trim();
+    if(v)fotos.push(v);
+  }
+  const prod={
+    codigo:document.getElementById('fCodigo').value.trim(),
+    nombre:document.getElementById('fNombre').value.trim()||null,
+    descripcion:document.getElementById('fDesc').value.trim()||null,
+    categoria_id:document.getElementById('fCat').value,
+    foto_url:fotos[0]||null,
+    fotos:fotos,
+    destacado:document.getElementById('fDest').checked,
+    activo:document.getElementById('fActivo').checked,
+    ambiente:getTagVals('fAmb'),estilo:getTagVals('fEst'),color:getTagVals('fCol'),
+  };
+  if(!prod.codigo){toast('El código es obligatorio ⚠️');return;}
+  const{error}=id?await sb.from('productos').update(prod).eq('id',id):await sb.from('productos').insert(prod);
+  if(error){toast('Error: '+error.message);return;}
+  toast(id?'Actualizado ✓':'Producto agregado ✓');closeModal();loadProds();
+}
+
+// SETTINGS
+async function loadSettingsForm(){
+  try{
+    const{data}=await sb.from('settings').select('*');
+    if(!data)return;
+    data.forEach(r=>settings[r.key]=r.value);
+    if(settings.horario_ls)document.getElementById('sHorLS').value=settings.horario_ls;
+    if(settings.horario_d)document.getElementById('sHorD').value=settings.horario_d;
+    if(settings.telefono)document.getElementById('sTel').value=settings.telefono;
+    if(settings.whatsapp)document.getElementById('sWa').value=settings.whatsapp;
+    if(settings.direccion)document.getElementById('sDirec').value=settings.direccion;
+    if(settings.hero_url)document.getElementById('sHeroUrl').value=settings.hero_url;
+  }catch(e){console.log('Settings table may not exist yet');}
+}
+
+const settingsFieldMap={
+  horario_ls:'sHorLS',horario_d:'sHorD',
+  telefono:'sTel',whatsapp:'sWa',direccion:'sDirec',
+  hero_url:'sHeroUrl'
+};
+
+async function saveSettings(keys){
+  for(const key of keys){
+    const el=document.getElementById(settingsFieldMap[key]);
+    if(!el)continue;
+    const val=el.value.trim();
+    const{error}=await sb.from('settings').upsert({key,value:val,updated_at:new Date().toISOString()});
+    if(error){toast('Error: '+error.message);return;}
+  }
+  toast('Guardado ✓');
+}
+
+// SOCIAL PROOF
+async function loadSocialProofAdmin(){
+  try {
+    const{data}=await sb.from('social_proof').select('*').order('orden');
+    if(!data||data.length===0){document.getElementById('spList').innerHTML='<div class="loading-sm">Sin fotos aún. Agregá la primera.</div>';return;}
+    document.getElementById('spList').innerHTML=data.map(item=>{
+      const src=item.foto_url?(item.foto_url.startsWith('http')?item.foto_url:`https://res.cloudinary.com/${CLD}/image/upload/c_fill,w_92,h_92,q_auto/${item.foto_url}`):null;
+      return`<div class="prod-row">
+        <div class="prod-thumb">${src?`<img src="${src}" alt="${item.titulo||''}">`:item.icono||'📸'}</div>
+        <div class="prod-info"><div class="prod-name">${item.titulo||'Sin título'}</div><div class="prod-meta">${item.activo?'Visible':'Oculta'}</div></div>
+        <div class="prod-acts">
+          <button class="btn-sm" onclick="editSP('${item.id}','${(item.titulo||'').replace(/'/g,"\\'")}','${item.foto_url||''}','${item.icono||'📸'}',${item.orden||0})">✏️</button>
+          <button class="btn-sm" onclick="togSP('${item.id}',${item.activo})">${item.activo?'🙈':'👁'}</button>
+          <button class="btn-sm del" onclick="delSP('${item.id}')">🗑</button>
+        </div>
+      </div>`;
+    }).join('');
+  }catch(e){document.getElementById('spList').innerHTML='<div class="loading-sm">Ejecutá el SQL de social_proof primero</div>';}
+}
+
+function addSocialProof(){
+  const titulo=prompt('Título (ej: "Comedor de María, Asunción")');
+  if(titulo===null)return;
+  const foto=prompt('Public ID de Cloudinary (dejá vacío si no tenés foto aún):');
+  if(foto===null)return;
+  sb.from('social_proof').insert({titulo,foto_url:foto||null,icono:'📸',activo:true,orden:0}).then(({error})=>{
+    if(error){toast('Error: '+error.message);return;}
+    toast('Foto agregada ✓');loadSocialProofAdmin();
+  });
+}
+
+function editSP(id,titulo,foto,icono,orden){
+  const newFoto=prompt(`Foto para "${titulo}"\nPublic ID actual: ${foto||'(ninguna)'}\n\nNuevo Public ID:`,foto);
+  if(newFoto===null)return;
+  const newTitulo=prompt('Título:',titulo);
+  if(newTitulo===null)return;
+  sb.from('social_proof').update({titulo:newTitulo,foto_url:newFoto||null}).eq('id',id).then(({error})=>{
+    if(error){toast('Error');return;}
+    toast('Actualizado ✓');loadSocialProofAdmin();
+  });
+}
+
+async function togSP(id,cur){
+  await sb.from('social_proof').update({activo:!cur}).eq('id',id);
+  toast(!cur?'Visible ✓':'Ocultada');loadSocialProofAdmin();
+}
+async function delSP(id){
+  if(!confirm('¿Eliminar esta foto?'))return;
+  await sb.from('social_proof').delete().eq('id',id);
+  toast('Eliminada');loadSocialProofAdmin();
+}
+
+// TOAST
+function toast(msg){const t=document.getElementById('toast');t.textContent=msg;t.classList.add('show');setTimeout(()=>t.classList.remove('show'),2500);}
+
+checkSession();
+</script>
+</body>
+</html>
