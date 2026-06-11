@@ -4,6 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>DIVA Admin</title>
+<link rel="icon" href="https://res.cloudinary.com/dnixftrzb/image/upload/c_fill,w_32,h_32,q_auto/IMG_3836_zkzs4g" type="image/jpeg">
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <style>
 :root{--m:#C2185B;--t:#4DB6AC;--dk:#0f0f0f;--dk2:#161616;--dk3:#1e1e1e;--dk4:#252525;}
@@ -212,7 +213,10 @@ input[type=hidden]{display:none;}
 
     <!-- CATEGORIES -->
     <div id="tab-categories" style="display:none">
-      <p style="font-size:12px;color:rgba(255,255,255,0.35);margin-bottom:16px;line-height:1.6;">Activá o desactivá categorías. Las desactivadas no aparecen en la web. Podés editar la foto de portada de cada una.</p>
+      <div style="display:flex;gap:10px;margin-bottom:16px;flex-wrap:wrap;">
+        <button class="btn-add" onclick="openCatModal()">+ Nueva categoría</button>
+        <p style="font-size:11px;color:rgba(255,255,255,0.3);align-self:center;line-height:1.5;">Arrastrá las filas para reordenar, o usá los botones ↑↓</p>
+      </div>
       <div id="catList"><div class="loading-sm">Cargando...</div></div>
     </div>
 
@@ -266,6 +270,39 @@ input[type=hidden]{display:none;}
       </div>
     </div>
 
+  </div>
+</div>
+
+<!-- MODAL CATEGORÍA -->
+<div class="modal-bg" id="catModalBg" onclick="if(event.target===this)closeCatModal()">
+  <div class="modal">
+    <div class="modal-handle"></div>
+    <div class="modal-title" id="catModalTitle">Nueva categoría</div>
+    <input type="hidden" id="cId">
+    <div class="fg"><label class="fl">Nombre *</label><input class="fi" id="cNombre" placeholder="Ej: Lustres"></div>
+    <div class="fg">
+      <label class="fl">Foto — Public ID de Cloudinary</label>
+      <input class="fi" id="cFoto" placeholder="Ej: IMG_3825_dvmo5d" oninput="previewCatFoto(this.value)">
+      <div id="cFotoPreview" style="margin-top:8px;width:80px;height:80px;border-radius:8px;overflow:hidden;background:var(--dk3);display:none;">
+        <img id="cFotoImg" style="width:80px;height:80px;object-fit:cover;" src="" alt="">
+      </div>
+      <p style="font-size:10px;color:rgba(255,255,255,0.25);margin-top:4px;">Para recortar usá el <a href="crop.html" style="color:var(--t)" target="_blank">Editor →</a></p>
+    </div>
+    <div class="fg"><label class="fl">Orden en la web (número)</label><input class="fi" id="cOrden" type="number" placeholder="1 = primero" min="0"></div>
+    <div class="fg" style="display:flex;gap:10px;align-items:center;">
+      <label style="display:flex;align-items:center;gap:8px;cursor:pointer;font-size:13px;color:rgba(255,255,255,0.7);">
+        <input type="checkbox" id="cActiva" checked> Visible en la web
+      </label>
+    </div>
+    <div class="fg">
+      <label class="fl">Slug (URL amigable)</label>
+      <input class="fi" id="cSlug" placeholder="Ej: lustres" style="font-family:monospace;">
+      <p style="font-size:10px;color:rgba(255,255,255,0.2);margin-top:3px;">Solo letras minúsculas y guiones. Se genera automático si lo dejás vacío.</p>
+    </div>
+    <div class="modal-btns">
+      <button class="btn-cancel" onclick="closeCatModal()">Cancelar</button>
+      <button class="btn-primary" onclick="saveCat()">Guardar</button>
+    </div>
   </div>
 </div>
 
@@ -408,40 +445,101 @@ async function loadCats(){
 }
 
 async function loadCatManager(){
-  const rows=await Promise.all(allCats.map(async c=>{
+  const{data:cats}=await sb.from('categorias').select('*').order('orden');
+  if(!cats){document.getElementById('catList').innerHTML='<div class="loading-sm">Error</div>';return;}
+  const rows=await Promise.all(cats.map(async c=>{
     const{count}=await sb.from('productos').select('*',{count:'exact',head:true}).eq('categoria_id',c.id);
     return{...c,cnt:count||0};
   }));
-  document.getElementById('catList').innerHTML=rows.map(c=>{
+  document.getElementById('catList').innerHTML=rows.map((c,i)=>{
     const src=c.foto_url?(c.foto_url.startsWith('http')?c.foto_url:`https://res.cloudinary.com/${CLD}/image/upload/c_fill,w_92,h_92,q_auto/${c.foto_url}`):null;
-    return`<div class="cat-row">
+    return`<div class="cat-row" data-id="${c.id}">
+      <div style="display:flex;flex-direction:column;gap:2px;margin-right:4px;">
+        <button class="btn-sm" style="padding:2px 7px;font-size:12px;" onclick="moveCat('${c.id}',${c.orden},-1,event)" ${i===0?'disabled opacity=.3':''}>↑</button>
+        <button class="btn-sm" style="padding:2px 7px;font-size:12px;" onclick="moveCat('${c.id}',${c.orden},1,event)" ${i===rows.length-1?'disabled opacity=.3':''}>↓</button>
+      </div>
       <div class="cat-thumb">${src?`<img src="${src}" alt="${c.nombre}">`:'🖼️'}</div>
-      <div class="cat-inf"><div class="cat-n">${c.nombre}</div><div class="cat-m">${c.cnt} productos · ${c.activa?'Visible':'Oculta'}</div></div>
+      <div class="cat-inf" style="flex:1">
+        <div class="cat-n">${c.nombre}</div>
+        <div class="cat-m">${c.cnt} prod · #${c.orden} · ${c.activa?'Visible':'Oculta'}</div>
+      </div>
       <div class="cat-acts">
-        <button class="btn-sm" onclick="editCatPhoto('${c.id}','${c.nombre}','${c.foto_url||''}')">🖼 Foto</button>
-        <button class="tog-btn ${c.activa?'on':''}" onclick="toggleCat('${c.id}',${c.activa},this)">${c.activa?'👁 Vis':'🙈 Ocul'}</button>
+        <button class="btn-sm" onclick="openCatModal('${c.id}','${(c.nombre||'').replace(/'/g,"\\'")}','${c.foto_url||''}',${c.orden||0},'${c.slug||''}',${c.activa})">✏️</button>
+        <button class="tog-btn ${c.activa?'on':''}" onclick="toggleCat('${c.id}',${c.activa},this)">${c.activa?'👁':'🙈'}</button>
       </div>
     </div>`;
   }).join('');
 }
 
-function editCatPhoto(id,nombre,cur){
-  const v=prompt(`Foto de "${nombre}"\nActual: ${cur||'(ninguna)'}\n\nPublic ID de Cloudinary:`,cur);
-  if(v===null)return;
-  sb.from('categorias').update({foto_url:v.trim()||null}).eq('id',id).then(({error})=>{
-    if(error){toast('Error: '+error.message);return;}
-    toast('Foto actualizada ✓');loadCatManager();
-  });
+function openCatModal(id='',nombre='',foto='',orden=0,slug='',activa=true){
+  document.getElementById('catModalTitle').textContent=id?'Editar categoría':'Nueva categoría';
+  document.getElementById('cId').value=id;
+  document.getElementById('cNombre').value=nombre;
+  document.getElementById('cFoto').value=foto;
+  document.getElementById('cOrden').value=orden;
+  document.getElementById('cSlug').value=slug;
+  document.getElementById('cActiva').checked=activa===true||activa==='true';
+  previewCatFoto(foto);
+  document.getElementById('catModalBg').classList.add('open');
+}
+function closeCatModal(){document.getElementById('catModalBg').classList.remove('open');}
+
+function previewCatFoto(val){
+  const wrap=document.getElementById('cFotoPreview');
+  const img=document.getElementById('cFotoImg');
+  if(!val||!val.trim()){wrap.style.display='none';return;}
+  const url=val.trim().startsWith('http')?val.trim():`https://res.cloudinary.com/${CLD}/image/upload/c_fill,w_160,h_160,q_auto/${val.trim()}`;
+  img.src=url;wrap.style.display='block';
+}
+
+function toSlug(s){return s.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'').replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,'');}
+
+async function saveCat(){
+  const id=document.getElementById('cId').value;
+  const nombre=document.getElementById('cNombre').value.trim();
+  if(!nombre){toast('El nombre es obligatorio ⚠️');return;}
+  const slug=document.getElementById('cSlug').value.trim()||toSlug(nombre);
+  const cat={
+    nombre,slug,
+    foto_url:document.getElementById('cFoto').value.trim()||null,
+    orden:parseInt(document.getElementById('cOrden').value)||0,
+    activa:document.getElementById('cActiva').checked,
+  };
+  const{error}=id
+    ?await sb.from('categorias').update(cat).eq('id',id)
+    :await sb.from('categorias').insert(cat);
+  if(error){toast('Error: '+error.message);return;}
+  toast(id?'Categoría actualizada ✓':'Categoría creada ✓');
+  closeCatModal();
+  await loadCats();
+  loadCatManager();
+}
+
+async function moveCat(id,currentOrden,dir,e){
+  e&&e.stopPropagation();
+  const{data:cats}=await sb.from('categorias').select('id,orden').order('orden');
+  if(!cats)return;
+  const idx=cats.findIndex(c=>c.id===id);
+  const swapIdx=idx+dir;
+  if(swapIdx<0||swapIdx>=cats.length)return;
+  const a=cats[idx],b=cats[swapIdx];
+  await Promise.all([
+    sb.from('categorias').update({orden:b.orden}).eq('id',a.id),
+    sb.from('categorias').update({orden:a.orden}).eq('id',b.id),
+  ]);
+  toast('Orden actualizado ✓');
+  await loadCats();
+  loadCatManager();
 }
 
 async function toggleCat(id,cur,btn){
   const{error}=await sb.from('categorias').update({activa:!cur}).eq('id',id);
   if(error){toast('Error');return;}
-  btn.textContent=!cur?'👁 Vis':'🙈 Ocul';
-  btn.className='tog-btn'+(!cur?' on':'');
-  btn.closest('.cat-row').querySelector('.cat-m').textContent=btn.closest('.cat-row').querySelector('.cat-m').textContent.replace(/Visible|Oculta/,!cur?'Visible':'Oculta');
   toast(!cur?'Categoría visible ✓':'Categoría ocultada');
+  await loadCats();
+  loadCatManager();
 }
+
 
 // PRODUCTS
 let sTimer=null;
