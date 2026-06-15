@@ -130,6 +130,61 @@ header{background:var(--dk2);border-bottom:1px solid rgba(255,255,255,0.07);padd
 .toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%);background:var(--dk3);color:#fff;padding:10px 22px;border-radius:22px;opacity:0;transition:.3s;font-size:13px;z-index:999;border:1px solid rgba(255,255,255,0.1);pointer-events:none;white-space:nowrap;}
 .toast.show{opacity:1;}
 input[type=hidden]{display:none;}
+
+/* ── TRACKER ── */
+.tk-hero{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:14px;}
+.tk-kpi{background:var(--dk2);border:1px solid rgba(255,255,255,0.07);border-radius:10px;padding:14px 16px;}
+.tk-kpi.accent{border-color:rgba(194,24,91,0.3);background:rgba(194,24,91,0.06);}
+.tk-kpi.accent2{border-color:rgba(77,182,172,0.3);background:rgba(77,182,172,0.06);}
+.tk-kpi-val{font-size:26px;font-weight:700;color:#fff;line-height:1;}
+.tk-kpi-label{font-size:9px;color:rgba(255,255,255,0.35);letter-spacing:1.5px;text-transform:uppercase;margin-top:4px;}
+.tk-kpi-sub{font-size:11px;margin-top:3px;}
+.tk-kpi-up{color:#4caf50;}
+.tk-kpi-dn{color:#ff5252;}
+.tk-kpi-eq{color:rgba(255,255,255,0.3);}
+
+.tk-section{background:var(--dk2);border:1px solid rgba(255,255,255,0.07);border-radius:10px;padding:16px;margin-bottom:12px;}
+.tk-section-title{font-size:10px;color:rgba(255,255,255,0.4);letter-spacing:2px;text-transform:uppercase;margin-bottom:14px;font-weight:600;}
+
+/* Daily entry form */
+.tk-date-nav{display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;}
+.tk-date-btn{background:rgba(255,255,255,0.07);border:1px solid rgba(255,255,255,0.1);color:#fff;font-size:18px;width:36px;height:36px;border-radius:8px;cursor:pointer;display:flex;align-items:center;justify-content:center;}
+.tk-date-lbl{font-size:14px;color:#fff;font-weight:600;}
+.tk-venta-wrap{display:flex;align-items:center;gap:10px;margin-bottom:14px;}
+.tk-currency{font-size:22px;color:rgba(255,255,255,0.3);font-weight:300;}
+.tk-venta-input{flex:1;background:var(--dk3);border:2px solid rgba(255,255,255,0.1);border-radius:10px;padding:14px 16px;color:#fff;font-size:28px;font-weight:700;outline:none;font-family:inherit;text-align:right;}
+.tk-venta-input:focus{border-color:var(--m);}
+.tk-checklist{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:14px;}
+.tk-check{display:flex;align-items:center;gap:10px;background:var(--dk3);border:1px solid rgba(255,255,255,0.07);border-radius:8px;padding:10px 12px;cursor:pointer;transition:all .15s;}
+.tk-check.checked{background:rgba(77,182,172,0.12);border-color:rgba(77,182,172,0.35);}
+.tk-check input{display:none;}
+.tk-check-icon{font-size:18px;width:24px;text-align:center;}
+.tk-check-lbl{font-size:12px;color:rgba(255,255,255,0.65);font-weight:500;line-height:1.2;}
+.tk-check.checked .tk-check-lbl{color:#fff;}
+.tk-check-box{width:18px;height:18px;border-radius:4px;border:1px solid rgba(255,255,255,0.2);margin-left:auto;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:11px;}
+.tk-check.checked .tk-check-box{background:var(--t);border-color:var(--t);color:var(--dk);}
+.tk-nota{width:100%;background:var(--dk3);border:1px solid rgba(255,255,255,0.1);border-radius:8px;padding:10px 13px;color:#fff;font-size:13px;outline:none;font-family:inherit;resize:none;height:58px;}
+.tk-nota:focus{border-color:var(--t);}
+.btn-tk-save{width:100%;background:var(--m);color:#fff;border:none;border-radius:8px;padding:14px;font-size:14px;font-weight:700;cursor:pointer;font-family:inherit;margin-top:8px;box-shadow:0 2px 12px rgba(194,24,91,0.3);}
+
+/* Chart bars */
+.tk-chart{margin-top:6px;}
+.tk-week-row{display:flex;align-items:center;gap:8px;margin-bottom:6px;}
+.tk-week-lbl{font-size:10px;color:rgba(255,255,255,0.4);width:70px;flex-shrink:0;text-align:right;}
+.tk-bar-wrap{flex:1;background:rgba(255,255,255,0.05);border-radius:4px;height:22px;overflow:hidden;position:relative;}
+.tk-bar-fill{height:100%;border-radius:4px;background:linear-gradient(90deg,var(--m),#e91e8c);transition:width .6s cubic-bezier(.25,.46,.45,.94);}
+.tk-bar-val{position:absolute;right:8px;top:50%;transform:translateY(-50%);font-size:10px;color:#fff;font-weight:600;}
+.tk-bar-actions{display:flex;gap:4px;margin-left:6px;flex-shrink:0;}
+.tk-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0;}
+
+/* Signal badges */
+.tk-signal{display:inline-flex;align-items:center;gap:5px;padding:3px 10px;border-radius:12px;font-size:10px;font-weight:600;letter-spacing:.5px;}
+.tk-signal.pos{background:rgba(76,175,80,0.15);color:#4caf50;border:1px solid rgba(76,175,80,0.25);}
+.tk-signal.neg{background:rgba(255,82,82,0.12);color:#ff5252;border:1px solid rgba(255,82,82,0.2);}
+.tk-signal.neu{background:rgba(255,255,255,0.06);color:rgba(255,255,255,0.4);border:1px solid rgba(255,255,255,0.1);}
+
+/* Disclaimer */
+.tk-disclaimer{font-size:10px;color:rgba(255,255,255,0.2);line-height:1.6;font-style:italic;margin-top:10px;padding:8px 12px;border-left:2px solid rgba(255,255,255,0.08);}
 </style>
 </head>
 <body>
@@ -159,7 +214,8 @@ input[type=hidden]{display:none;}
   </header>
 
   <div class="tabs">
-    <button class="tab active" onclick="switchTab('stats',this)">📊 Estadísticas</button>
+    <button class="tab active" onclick="switchTab('stats',this)">📊 Stats</button>
+    <button class="tab" onclick="switchTab('tracker',this)">📈 Tracker</button>
     <button class="tab" onclick="switchTab('products',this)">📦 Productos</button>
     <button class="tab" onclick="switchTab('categories',this)">🗂 Categorías</button>
     <button class="tab" onclick="switchTab('social',this)">📸 Hogares</button>
@@ -167,6 +223,111 @@ input[type=hidden]{display:none;}
   </div>
 
   <div class="content">
+
+    <!-- TRACKER -->
+    <div id="tab-tracker" style="display:none">
+
+      <!-- KPIs top -->
+      <div class="tk-hero">
+        <div class="tk-kpi accent">
+          <div class="tk-kpi-val" id="tkVentaSemana">—</div>
+          <div class="tk-kpi-label">Esta semana (USD)</div>
+          <div class="tk-kpi-sub" id="tkVentaVsSemana"></div>
+        </div>
+        <div class="tk-kpi accent2">
+          <div class="tk-kpi-val" id="tkConsultasSemana">—</div>
+          <div class="tk-kpi-label">Consultas web</div>
+          <div class="tk-kpi-sub" id="tkConsultasVs"></div>
+        </div>
+        <div class="tk-kpi">
+          <div class="tk-kpi-val" id="tkPromDia">—</div>
+          <div class="tk-kpi-label">Prom. diario USD</div>
+          <div class="tk-kpi-sub" id="tkPromMeta" style="font-size:9px;color:rgba(255,255,255,0.25);">Meta: USD 3,000/día</div>
+        </div>
+        <div class="tk-kpi">
+          <div class="tk-kpi-val" id="tkDiasRegistrados">—</div>
+          <div class="tk-kpi-label">Días registrados</div>
+        </div>
+      </div>
+
+      <!-- Carga diaria -->
+      <div class="tk-section">
+        <div class="tk-section-title">Registro del día</div>
+        <div class="tk-date-nav">
+          <button class="tk-date-btn" onclick="tkChangeDate(-1)">‹</button>
+          <span class="tk-date-lbl" id="tkDateLbl"></span>
+          <button class="tk-date-btn" onclick="tkChangeDate(1)">›</button>
+        </div>
+
+        <div class="tk-venta-wrap">
+          <span class="tk-currency">USD</span>
+          <input class="tk-venta-input" id="tkVenta" type="number" placeholder="0" min="0" step="10">
+        </div>
+
+        <div class="tk-section-title" style="margin-bottom:10px;">¿Qué hiciste hoy?</div>
+        <div class="tk-checklist">
+          <label class="tk-check" id="ck-reel" onclick="tkToggleCheck(this)">
+            <span class="tk-check-icon">🎬</span>
+            <span class="tk-check-lbl">Reel publicado</span>
+            <span class="tk-check-box">✓</span>
+          </label>
+          <label class="tk-check" id="ck-post" onclick="tkToggleCheck(this)">
+            <span class="tk-check-icon">🖼️</span>
+            <span class="tk-check-lbl">Post / carrusel</span>
+            <span class="tk-check-box">✓</span>
+          </label>
+          <label class="tk-check" id="ck-story" onclick="tkToggleCheck(this)">
+            <span class="tk-check-icon">⭕</span>
+            <span class="tk-check-lbl">Story publicada</span>
+            <span class="tk-check-box">✓</span>
+          </label>
+          <label class="tk-check" id="ck-wa" onclick="tkToggleCheck(this)">
+            <span class="tk-check-icon">💬</span>
+            <span class="tk-check-lbl">WhatsApp VIP</span>
+            <span class="tk-check-box">✓</span>
+          </label>
+          <label class="tk-check" id="ck-infl" onclick="tkToggleCheck(this)">
+            <span class="tk-check-icon">⭐</span>
+            <span class="tk-check-lbl">Influencer publicó</span>
+            <span class="tk-check-box">✓</span>
+          </label>
+          <label class="tk-check" id="ck-tiktok" onclick="tkToggleCheck(this)">
+            <span class="tk-check-icon">📱</span>
+            <span class="tk-check-lbl">TikTok Spark Ads</span>
+            <span class="tk-check-box">✓</span>
+          </label>
+        </div>
+
+        <textarea class="tk-nota" id="tkNota" placeholder="Nota opcional: evento, visita especial, clima de la tienda..."></textarea>
+        <button class="btn-tk-save" onclick="tkSaveDay()">Guardar día ✓</button>
+      </div>
+
+      <!-- Gráfico de ventas últimas 8 semanas -->
+      <div class="tk-section">
+        <div class="tk-section-title">Ventas por semana — últimas 8 semanas</div>
+        <div class="tk-chart" id="tkChartVentas"><div class="loading-sm">Cargando...</div></div>
+        <div class="tk-disclaimer">Las señales de correlación son tendencias, no causalidad. Varios factores pueden afectar las ventas simultáneamente.</div>
+      </div>
+
+      <!-- Correlación acciones vs ventas -->
+      <div class="tk-section">
+        <div class="tk-section-title">Señales de correlación — últimas 8 semanas</div>
+        <div id="tkCorrelacion"><div class="loading-sm">Calculando...</div></div>
+        <div class="tk-disclaimer">Estimación estadística · No indica causa-efecto · Mínimo 4 semanas para señales útiles</div>
+      </div>
+
+      <!-- Consultas web por semana -->
+      <div class="tk-section">
+        <div class="tk-section-title">Consultas web por semana (WhatsApp desde la web)</div>
+        <div class="tk-chart" id="tkChartConsultas"><div class="loading-sm">Cargando...</div></div>
+      </div>
+
+      <!-- Historial de días -->
+      <div class="tk-section">
+        <div class="tk-section-title">Historial de días registrados</div>
+        <div id="tkHistorial"><div class="loading-sm">Cargando...</div></div>
+      </div>
+    </div>
 
     <!-- STATS -->
     <div id="tab-stats">
@@ -387,6 +548,8 @@ function initApp(user){
   document.getElementById('app').classList.add('visible');
   document.getElementById('userBadge').textContent=user.email?.split('@')[0]||'Admin';
   loadCats().then(()=>{loadStats();loadProds();loadCatManager();loadSettingsForm();loadSocialProofAdmin();});
+  // Init tracker date
+  document.getElementById('tkDateLbl').textContent=tkFmtDate(tkDate);
 }
 
 // TABS
@@ -396,6 +559,7 @@ function switchTab(name,el){
   document.querySelectorAll('[id^="tab-"]').forEach(t=>t.style.display='none');
   document.getElementById('tab-'+name).style.display='block';
   if(name==='social')loadSocialProofAdmin();
+  if(name==='tracker'){tkLoadDay();tkLoadDashboard();}
 }
 
 // STATS
@@ -732,6 +896,283 @@ async function delSP(id){
   if(!confirm('¿Eliminar esta foto?'))return;
   await sb.from('social_proof').delete().eq('id',id);
   toast('Eliminada');loadSocialProofAdmin();
+}
+
+// ═══════════════════════════════════════
+// TRACKER
+// ═══════════════════════════════════════
+let tkDate = new Date();
+tkDate.setHours(0,0,0,0);
+
+function tkFmtDate(d){
+  const days=['Dom','Lun','Mar','Mié','Jue','Vie','Sáb'];
+  const months=['Ene','Feb','Mar','Abr','May','Jun','Jul','Ago','Sep','Oct','Nov','Dic'];
+  return`${days[d.getDay()]} ${d.getDate()} ${months[d.getMonth()]} ${d.getFullYear()}`;
+}
+function tkDateKey(d){return d.toISOString().split('T')[0];}
+
+function tkChangeDate(dir){
+  tkDate.setDate(tkDate.getDate()+dir);
+  document.getElementById('tkDateLbl').textContent=tkFmtDate(tkDate);
+  tkLoadDay();
+}
+
+function tkToggleCheck(el){
+  el.classList.toggle('checked');
+}
+
+async function tkLoadDay(){
+  const key=tkDateKey(tkDate);
+  document.getElementById('tkDateLbl').textContent=tkFmtDate(tkDate);
+
+  // Load venta
+  const{data:v}=await sb.from('ventas_diarias').select('*').eq('fecha',key).maybeSingle();
+  document.getElementById('tkVenta').value=v?.venta_total||'';
+  document.getElementById('tkNota').value=v?.notas||'';
+
+  // Load acciones
+  const{data:a}=await sb.from('acciones_marketing').select('*').eq('fecha',key).maybeSingle();
+  const checks={
+    'ck-reel': a?.reels_publicados>0,
+    'ck-post': a?.posts_publicados>0,
+    'ck-story': a?.stories_publicadas>0,
+    'ck-wa': a?.whatsapp_vip,
+    'ck-infl': a?.influencer_publico,
+    'ck-tiktok': a?.tiktok_ads,
+  };
+  Object.entries(checks).forEach(([id,val])=>{
+    const el=document.getElementById(id);
+    if(el)el.classList.toggle('checked',!!val);
+  });
+}
+
+async function tkSaveDay(){
+  const key=tkDateKey(tkDate);
+  const venta=parseFloat(document.getElementById('tkVenta').value)||0;
+  const notas=document.getElementById('tkNota').value.trim();
+
+  // Save venta
+  const{error:e1}=await sb.from('ventas_diarias').upsert({
+    fecha:key, venta_total:venta, notas, updated_at:new Date().toISOString()
+  },{onConflict:'fecha'});
+
+  // Save acciones
+  const{error:e2}=await sb.from('acciones_marketing').upsert({
+    fecha:key,
+    reels_publicados: document.getElementById('ck-reel').classList.contains('checked')?1:0,
+    posts_publicados: document.getElementById('ck-post').classList.contains('checked')?1:0,
+    stories_publicadas: document.getElementById('ck-story').classList.contains('checked')?1:0,
+    whatsapp_vip: document.getElementById('ck-wa').classList.contains('checked'),
+    influencer_publico: document.getElementById('ck-infl').classList.contains('checked'),
+    tiktok_ads: document.getElementById('ck-tiktok').classList.contains('checked'),
+    updated_at:new Date().toISOString()
+  },{onConflict:'fecha'});
+
+  if(e1||e2){toast('Error al guardar ⚠️');return;}
+  toast('Día guardado ✓');
+  tkLoadDashboard();
+}
+
+// Week helper
+function tkGetWeeks(n){
+  const weeks=[];
+  const today=new Date();today.setHours(0,0,0,0);
+  // Get Monday of current week
+  const dow=today.getDay()||7;
+  const monday=new Date(today);monday.setDate(today.getDate()-(dow-1));
+
+  for(let i=n-1;i>=0;i--){
+    const start=new Date(monday);start.setDate(monday.getDate()-i*7);
+    const end=new Date(start);end.setDate(start.getDate()+6);
+    weeks.push({
+      start,end,
+      label:i===0?'Esta sem':i===1?'Sem ant':`Sem -${i}`,
+      startKey:tkDateKey(start),
+      endKey:tkDateKey(end),
+    });
+  }
+  return weeks;
+}
+
+async function tkLoadDashboard(){
+  const weeks=tkGetWeeks(8);
+
+  // Fetch all ventas for the period
+  const{data:ventas}=await sb.from('ventas_diarias')
+    .select('fecha,venta_total')
+    .gte('fecha',weeks[0].startKey)
+    .lte('fecha',weeks[weeks.length-1].endKey)
+    .order('fecha');
+
+  // Fetch all acciones
+  const{data:acciones}=await sb.from('acciones_marketing')
+    .select('*')
+    .gte('fecha',weeks[0].startKey)
+    .lte('fecha',weeks[weeks.length-1].endKey);
+
+  // Fetch consultas WhatsApp web
+  const{data:consultas}=await sb.from('eventos')
+    .select('created_at')
+    .eq('tipo','consulta_whatsapp')
+    .gte('created_at',weeks[0].startKey)
+    .lte('created_at',weeks[weeks.length-1].endKey+'T23:59:59');
+
+  // Group by week
+  const byWeek=weeks.map(w=>{
+    const vv=(ventas||[]).filter(v=>v.fecha>=w.startKey&&v.fecha<=w.endKey);
+    const aa=(acciones||[]).filter(a=>a.fecha>=w.startKey&&a.fecha<=w.endKey);
+    const cc=(consultas||[]).filter(c=>c.created_at.split('T')[0]>=w.startKey&&c.created_at.split('T')[0]<=w.endKey);
+    const totalVenta=vv.reduce((s,v)=>s+(parseFloat(v.venta_total)||0),0);
+    const diasRegistrados=vv.filter(v=>v.venta_total>0).length;
+    return{
+      ...w,
+      totalVenta,
+      diasRegistrados,
+      promDia:diasRegistrados>0?totalVenta/diasRegistrados:0,
+      reels:aa.reduce((s,a)=>s+(a.reels_publicados||0),0),
+      posts:aa.reduce((s,a)=>s+(a.posts_publicados||0),0),
+      stories:aa.reduce((s,a)=>s+(a.stories_publicadas||0),0),
+      waVip:aa.filter(a=>a.whatsapp_vip).length,
+      influencer:aa.filter(a=>a.influencer_publico).length,
+      tiktok:aa.filter(a=>a.tiktok_ads).length,
+      consultasWeb:cc.length,
+    };
+  });
+
+  // KPIs
+  const cur=byWeek[byWeek.length-1];
+  const prev=byWeek[byWeek.length-2];
+
+  document.getElementById('tkVentaSemana').textContent=cur.totalVenta>0?`$${Math.round(cur.totalVenta).toLocaleString()}`:'—';
+  document.getElementById('tkConsultasSemana').textContent=cur.consultasWeb||'—';
+  document.getElementById('tkDiasRegistrados').textContent=(ventas||[]).filter(v=>v.venta_total>0).length;
+
+  const allDias=(ventas||[]).filter(v=>v.venta_total>0);
+  const totalAll=allDias.reduce((s,v)=>s+(parseFloat(v.venta_total)||0),0);
+  const promAll=allDias.length>0?totalAll/allDias.length:0;
+  document.getElementById('tkPromDia').textContent=promAll>0?`$${Math.round(promAll).toLocaleString()}`:'—';
+
+  // vs semana anterior
+  const vsVenta=prev.totalVenta>0?((cur.totalVenta-prev.totalVenta)/prev.totalVenta*100):null;
+  const vsConsultas=prev.consultasWeb>0?((cur.consultasWeb-prev.consultasWeb)/prev.consultasWeb*100):null;
+
+  document.getElementById('tkVentaVsSemana').innerHTML=vsVenta!==null
+    ?`<span class="${vsVenta>=0?'tk-kpi-up':'tk-kpi-dn'}">${vsVenta>=0?'↑':'↓'}${Math.abs(vsVenta).toFixed(0)}% vs sem ant</span>`
+    :'<span style="color:rgba(255,255,255,0.2)">Sin datos ant.</span>';
+
+  document.getElementById('tkConsultasVs').innerHTML=vsConsultas!==null
+    ?`<span class="${vsConsultas>=0?'tk-kpi-up':'tk-kpi-dn'}">${vsConsultas>=0?'↑':'↓'}${Math.abs(vsConsultas).toFixed(0)}% vs sem ant</span>`
+    :'<span style="color:rgba(255,255,255,0.2)">Desde la web</span>';
+
+  // META progress
+  const metaDia=3000;
+  const pct=promAll>0?Math.min(100,promAll/metaDia*100):0;
+  document.getElementById('tkPromMeta').innerHTML=`<div style="margin-top:6px;background:rgba(255,255,255,0.06);border-radius:4px;height:4px;overflow:hidden;"><div style="width:${pct}%;height:100%;background:linear-gradient(90deg,var(--m),#e91e8c);border-radius:4px;transition:width .6s;"></div></div><span style="font-size:9px;color:rgba(255,255,255,0.25);">Meta USD 3,000/día · ${pct.toFixed(0)}%</span>`;
+
+  // Ventas chart
+  const maxV=Math.max(...byWeek.map(w=>w.totalVenta),1);
+  document.getElementById('tkChartVentas').innerHTML=byWeek.map(w=>{
+    const pct=w.totalVenta>0?Math.round(w.totalVenta/maxV*100):0;
+    const actionDots=[
+      w.reels>0?`<span class="tk-dot" style="background:#e91e8c;" title="Reels: ${w.reels}"></span>`:'',
+      w.waVip>0?`<span class="tk-dot" style="background:#25D366;" title="WA VIP: ${w.waVip}d"></span>`:'',
+      w.influencer>0?`<span class="tk-dot" style="background:#FFD700;" title="Influencer: ${w.influencer}d"></span>`:'',
+      w.tiktok>0?`<span class="tk-dot" style="background:#4DB6AC;" title="TikTok Ads"></span>`:'',
+    ].join('');
+    return`<div class="tk-week-row">
+      <span class="tk-week-lbl">${w.label}</span>
+      <div class="tk-bar-wrap">
+        <div class="tk-bar-fill" style="width:${pct}%"></div>
+        ${w.totalVenta>0?`<span class="tk-bar-val">$${Math.round(w.totalVenta).toLocaleString()}</span>`:'<span class="tk-bar-val" style="color:rgba(255,255,255,0.2)">sin datos</span>'}
+      </div>
+      <div class="tk-bar-actions">${actionDots}</div>
+    </div>`;
+  }).join('')+`
+  <div style="display:flex;gap:12px;flex-wrap:wrap;margin-top:10px;">
+    <span style="font-size:10px;color:rgba(255,255,255,0.3);display:flex;align-items:center;gap:4px;"><span class="tk-dot" style="background:#e91e8c;"></span>Reel</span>
+    <span style="font-size:10px;color:rgba(255,255,255,0.3);display:flex;align-items:center;gap:4px;"><span class="tk-dot" style="background:#25D366;"></span>WA VIP</span>
+    <span style="font-size:10px;color:rgba(255,255,255,0.3);display:flex;align-items:center;gap:4px;"><span class="tk-dot" style="background:#FFD700;"></span>Influencer</span>
+    <span style="font-size:10px;color:rgba(255,255,255,0.3);display:flex;align-items:center;gap:4px;"><span class="tk-dot" style="background:#4DB6AC;"></span>TikTok</span>
+  </div>`;
+
+  // Correlación acciones vs ventas
+  tkRenderCorrelacion(byWeek);
+
+  // Consultas chart
+  const maxC=Math.max(...byWeek.map(w=>w.consultasWeb),1);
+  document.getElementById('tkChartConsultas').innerHTML=byWeek.map(w=>{
+    const pct=w.consultasWeb>0?Math.round(w.consultasWeb/maxC*100):0;
+    return`<div class="tk-week-row">
+      <span class="tk-week-lbl">${w.label}</span>
+      <div class="tk-bar-wrap">
+        <div class="tk-bar-fill" style="width:${pct}%;background:linear-gradient(90deg,var(--t),#26C6DA)"></div>
+        ${w.consultasWeb>0?`<span class="tk-bar-val">${w.consultasWeb}</span>`:'<span class="tk-bar-val" style="color:rgba(255,255,255,0.2)">0</span>'}
+      </div>
+    </div>`;
+  }).join('');
+
+  // Historial
+  tkRenderHistorial(ventas||[],acciones||[]);
+}
+
+function tkRenderCorrelacion(byWeek){
+  const semanas=byWeek.filter(w=>w.diasRegistrados>0);
+  if(semanas.length<3){
+    document.getElementById('tkCorrelacion').innerHTML='<div class="loading-sm" style="color:rgba(255,255,255,0.2)">Registrá al menos 3 semanas para ver señales de correlación</div>';
+    return;
+  }
+
+  const acciones=[
+    {key:'reels',label:'Semanas con Reels',icon:'🎬',color:'#e91e8c'},
+    {key:'waVip',label:'Semanas con WA VIP',icon:'💬',color:'#25D366'},
+    {key:'influencer',label:'Semanas con Influencer',icon:'⭐',color:'#FFD700'},
+  ];
+
+  let html='';
+  acciones.forEach(({key,label,icon,color})=>{
+    const con=semanas.filter(w=>w[key]>0);
+    const sin=semanas.filter(w=>w[key]===0);
+    if(con.length<1||sin.length<1)return;
+    const avgCon=con.reduce((s,w)=>s+w.promDia,0)/con.length;
+    const avgSin=sin.reduce((s,w)=>s+w.promDia,0)/sin.length;
+    const diff=avgCon-avgSin;
+    const pct=avgSin>0?diff/avgSin*100:0;
+    const signal=Math.abs(pct)>10?(pct>0?'pos':'neg'):'neu';
+    const arrow=pct>0?'↑':'↓';
+    html+=`<div style="display:flex;align-items:center;gap:10px;padding:10px 0;border-bottom:1px solid rgba(255,255,255,0.05);">
+      <span style="font-size:18px;width:24px;">${icon}</span>
+      <div style="flex:1;">
+        <div style="font-size:12px;color:rgba(255,255,255,0.7);margin-bottom:3px;">${label}</div>
+        <div style="font-size:10px;color:rgba(255,255,255,0.3);">Prom. con: $${Math.round(avgCon).toLocaleString()} · Sin: $${Math.round(avgSin).toLocaleString()}</div>
+      </div>
+      <span class="tk-signal ${signal}">${arrow}${Math.abs(pct).toFixed(0)}%</span>
+    </div>`;
+  });
+
+  if(!html)html='<div class="loading-sm" style="color:rgba(255,255,255,0.2)">Seguí registrando para ver señales</div>';
+  document.getElementById('tkCorrelacion').innerHTML=html;
+}
+
+function tkRenderHistorial(ventas,acciones){
+  const sorted=[...ventas].sort((a,b)=>b.fecha.localeCompare(a.fecha)).slice(0,14);
+  if(!sorted.length){document.getElementById('tkHistorial').innerHTML='<div class="loading-sm" style="color:rgba(255,255,255,0.2)">Sin días registrados aún</div>';return;}
+  document.getElementById('tkHistorial').innerHTML=sorted.map(v=>{
+    const a=acciones.find(x=>x.fecha===v.fecha);
+    const dots=[
+      a?.reels_publicados>0?'🎬':'',
+      a?.whatsapp_vip?'💬':'',
+      a?.influencer_publico?'⭐':'',
+      a?.tiktok_ads?'📱':'',
+    ].filter(Boolean).join(' ');
+    const d=new Date(v.fecha+'T12:00:00');
+    const lbl=`${d.getDate()}/${d.getMonth()+1}`;
+    return`<div style="display:flex;align-items:center;gap:10px;padding:9px 0;border-bottom:1px solid rgba(255,255,255,0.05);">
+      <span style="font-size:11px;color:rgba(255,255,255,0.3);width:40px;flex-shrink:0;">${lbl}</span>
+      <span style="font-size:13px;color:#fff;font-weight:600;flex:1;">$${parseFloat(v.venta_total).toLocaleString()}</span>
+      <span style="font-size:14px;">${dots}</span>
+      ${v.notas?`<span style="font-size:10px;color:rgba(255,255,255,0.25);max-width:120px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">${v.notas}</span>`:''}
+    </div>`;
+  }).join('');
 }
 
 // TOAST
